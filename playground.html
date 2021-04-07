@@ -78,6 +78,7 @@
         });
 
         document.querySelector("#clear-stage").addEventListener("click", () => {
+            count = 0;
             const stageClone = document.querySelector('#stage').innerHTML = "<span>Hi</span>";
             document.querySelector("#clones").innerHTML = "";
         });
