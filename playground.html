@@ -1,92 +1,170 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <title>Nested layout problems</title>
     <style type="text/css">
-      .flex .layout {
-        display: flex;
-        height: 100%;
-      }
+        .flex .layout {
+            display: flex;
+        }
 
-      .grid .layout {
-        display: grid;
-        height: 100%;
-      }
+        .grid .layout {
+            display: grid;
+        }
+
+        .height100 .layout,
+        .height100 .layout-item {
+            height: 100%;
+        }
+
+        .nest-0 {
+            border: 1px solid Tomato;
+        }
+
+        .nest-1 {
+            border: 1px solid Orange;
+        }
+
+        .nest-2 {
+            border: 1px solid Gold;
+        }
+
+        .nest-3 {
+            border: 1px solid ForestGreen;
+        }
+
+        .nest-4 {
+            border: 1px solid DodgerBlue;
+        }
+
+        .nest-5 {
+            border: 1px solid DarkOrchid;
+        }
     </style>
     <script type="module">
-      let count = 0;
-      updateCount();
-      let layoutType = "flex";
-      updateType();
-
-      document.querySelector("#add-nesting").addEventListener("click", () => {
-        addNesting();
-      });
-
-      document.querySelector("#use-flex").addEventListener("click", () => {
-        layoutType = "flex";
-        updateType();
-      });
-
-      document.querySelector("#use-grid").addEventListener("click", () => {
-        layoutType = "grid";
-        updateType();
-      });
-
-      document.querySelector("#clone-stage").addEventListener("click", () => {
-        const stageClone = document.querySelector('#stage').cloneNode(true);
-        stageClone.removeAttribute('id');
-        document.querySelector("#clones").appendChild(stageClone);
-      });
-
-      function addNesting() {
-        const layoutTemplate = document
-          .querySelector("#layout")
-          .content.cloneNode(true);
-        const stage = document.querySelector("#stage");
-        const elOnStage = stage.children[0];
-        elOnStage.remove();
-        const layoutDiv = layoutTemplate.children[0];
-        const layoutItemDiv = layoutDiv.children[0];
-        layoutItemDiv.appendChild(elOnStage);
-        stage.appendChild(layoutDiv);
-        count++;
+        let count = 0;
+        let height100 = false;
+        let layoutType = "flex";
         updateCount();
-      }
+        updateHeight();
+        updateType();
 
-      function updateCount() {
-        document.querySelector("#nesting-count").textContent = count;
-      }
+        document.querySelector("#add-nesting1").addEventListener("click", () => {
+            addNesting(1);
+        });
 
-      function updateType() {
-        document.querySelector("#layout-type").textContent = layoutType;
-        document.querySelector('#stage').setAttribute('class', layoutType);
-      }
+        document.querySelector("#add-nesting10").addEventListener("click", () => {
+            addNesting(10);
+        });
+
+        document.querySelector("#add-nesting100").addEventListener("click", () => {
+            addNesting(100);
+        });
+
+        document.querySelector("#use-flex").addEventListener("click", () => {
+            layoutType = "flex";
+            updateType();
+        });
+
+        document.querySelector("#use-grid").addEventListener("click", () => {
+            layoutType = "grid";
+            updateType();
+        });
+
+        document.querySelector("#toggle-height").addEventListener("click", () => {
+            height100 = !height100;
+            updateHeight();
+        });
+
+        document.querySelector("#clear-stage").addEventListener("click", () => {
+            const stageClone = document.querySelector('#stage').innerHTML = "<span>Hi</span>";
+            document.querySelector("#clones").innerHTML = "";
+        });
+
+        document.querySelector("#clone-stage").addEventListener("click", () => {
+            const stageClone = document.querySelector('#stage').cloneNode(true);
+            stageClone.removeAttribute('id');
+            document.querySelector("#clones").appendChild(stageClone);
+        });
+
+
+        function addNesting(levels) {
+            const layoutTemplate = document
+                .querySelector("#layout")
+                .content;
+            const stage = document.querySelector("#stage");
+            let elOnStage = stage.children[0];
+            elOnStage.remove();
+
+
+            for (let i = 0; i < levels; i++) {
+                count++;
+                let template = layoutTemplate.cloneNode(true).children[0];;
+                elOnStage = generateTemplate(template, elOnStage, count);
+
+            }
+            stage.appendChild(elOnStage);
+            updateCount();
+        }
+
+        function generateTemplate(template, html, count) {
+            const layoutItemDiv = template.children[0];
+            layoutItemDiv.classList.add("nest-" + count % 6)
+            layoutItemDiv.appendChild(html);
+            return template;
+        }
+
+        function updateCount() {
+            document.querySelector("#nesting-count").textContent = count;
+        }
+
+        function updateHeight() {
+            document.querySelector("#height-type").textContent = height100 ? "100%" : "auto";
+            document.querySelector('#stage').setAttribute('class', layoutType + (height100 ? " height100" : ""));
+        }
+
+        function updateType() {
+            document.querySelector("#layout-type").textContent = layoutType;
+            document.querySelector('#stage').setAttribute('class', layoutType + (height100 ? " height100" : ""));
+        }
+
     </script>
     <template id="layout">
-      <div class="layout">
-        <div class="layout-item"></div>
-      </div>
+        <div class="layout">
+            <div class="layout-item"></div>
+        </div>
     </template>
-  </head>
-  <body>
+</head>
+
+<body>
     <div>
-      <button id="add-nesting">Add nested layout</button>
-      <button id="use-flex">Use flex</button>
-      <button id="use-grid">Use grid</button>
-      <button id="clone-stage">Clone current stage</button>
-      <div>Nesting: <span id="nesting-count"></span></div>
-      <div>Type: <span id="layout-type"></span></div>
+        <button id="use-flex">Use flex</button>
+        <button id="use-grid">Use grid</button>
+        <button id="toggle-height">Toggle height 100%</button>
+    </div>
+    <div>
+        <button id="add-nesting1">Add nested layout</button>
+        <button id="add-nesting10">Add 10 nested layouts</button>
+        <button id="add-nesting100">Add 100 nested layouts</button>
+        <button id="clone-stage">Clone current stage</button>
+        <button id="clear-stage">Clear stage</button>
+        <div>
+            Type: <span id="layout-type"></span> |
+            Height: <span id="height-type"></span> |
+            Nesting: <span id="nesting-count"></span>
+        </div>
     </div>
     <hr />
     <div id="stage" class="flex">
-      <span>Hi</span>
+        <span>Hi</span>
     </div>
     <hr />
     <span>Clones:</span>
     <div id="clones">
 
     </div>
-  </body>
+
+</body>
+
 </html>
