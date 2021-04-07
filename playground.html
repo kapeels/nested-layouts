@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Nested layout problems</title>
+    <style type="text/css">
+      .flex .layout {
+        display: flex;
+        height: 100%;
+      }
+
+      .grid .layout {
+        display: grid;
+        height: 100%;
+      }
+    </style>
+    <script type="module">
+      let count = 0;
+      updateCount();
+      let layoutType = "flex";
+      updateType();
+
+      document.querySelector("#add-nesting").addEventListener("click", () => {
+        addNesting();
+      });
+
+      document.querySelector("#use-flex").addEventListener("click", () => {
+        layoutType = "flex";
+        updateType();
+      });
+
+      document.querySelector("#use-grid").addEventListener("click", () => {
+        layoutType = "grid";
+        updateType();
+      });
+
+      document.querySelector("#clone-stage").addEventListener("click", () => {
+        const stageClone = document.querySelector('#stage').cloneNode(true);
+        stageClone.removeAttribute('id');
+        document.querySelector("#clones").appendChild(stageClone);
+      });
+
+      function addNesting() {
+        const layoutTemplate = document
+          .querySelector("#layout")
+          .content.cloneNode(true);
+        const stage = document.querySelector("#stage");
+        const elOnStage = stage.children[0];
+        elOnStage.remove();
+        const layoutDiv = layoutTemplate.children[0];
+        const layoutItemDiv = layoutDiv.children[0];
+        layoutItemDiv.appendChild(elOnStage);
+        stage.appendChild(layoutDiv);
+        count++;
+        updateCount();
+      }
+
+      function updateCount() {
+        document.querySelector("#nesting-count").textContent = count;
+      }
+
+      function updateType() {
+        document.querySelector("#layout-type").textContent = layoutType;
+        document.querySelector('#stage').setAttribute('class', layoutType);
+      }
+    </script>
+    <template id="layout">
+      <div class="layout">
+        <div class="layout-item"></div>
+      </div>
+    </template>
+  </head>
+  <body>
+    <div>
+      <button id="add-nesting">Add nested layout</button>
+      <button id="use-flex">Use flex</button>
+      <button id="use-grid">Use grid</button>
+      <button id="clone-stage">Clone current stage</button>
+      <div>Nesting: <span id="nesting-count"></span></div>
+      <div>Type: <span id="layout-type"></span></div>
+    </div>
+    <hr />
+    <div id="stage" class="flex">
+      <span>Hi</span>
+    </div>
+    <hr />
+    <span>Clones:</span>
+    <div id="clones">
+
+    </div>
+  </body>
+</html>
